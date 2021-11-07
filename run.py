@@ -50,6 +50,8 @@ parser.add_argument('--session', default=None,
                     help='session name ')
 parser.add_argument('--sublayer', default=None,
                     help='sublayer name ')
+parser.add_argument('--layer', default=None,
+                    help='sublayer name ')
 
 
 
@@ -182,7 +184,7 @@ def train(restore_path=None,  # useful when you want to restart training
             data_load_start = time.time()
 
 
-def test(layer='V4', sublayer=FLAGS.sublayer, time_step=0, imsize=224):
+def test(layer=FLAGS.layer, sublayer=FLAGS.sublayer, time_step=0, imsize=224):
     """
     Suitable for small image sets. If you have thousands of images or it is
     taking too long to extract features, consider using
