@@ -225,7 +225,7 @@ def test(layer='decoder', sublayer='avgpool', time_step=0, imsize=224):
             except:
                 raise FileNotFoundError(f'Unable to load {fname}')
             im = transform(im)
-            im = im.unsqueeze(0)  # adding extra dimension for batch size of 1
+            im = im.unsqueeze(0).cuda()  # adding extra dimension for batch size of 1
             _model_feats = []
             model(im)
             model_feats.append(_model_feats[time_step])
