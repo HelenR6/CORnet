@@ -217,13 +217,18 @@ def test(layer='V4', sublayer=FLAGS.sublayer, time_step=0, imsize=224):
     model_feats = []
  
     f = h5py.File(FLAGS.data_path,'r')
-    natural_data = f['images/naturalistic'][:]
+    if FLAGS.session=='natural':
+      data = f['images/naturalistic'][:]
+    else:
+      session_path=FLAGS.session.replace('_','/')
+      final_path=session_path[:-1]+'_'+session_path[-1:]
+      data = f['images/synthetic/monkey_'+final_path][:]
     with torch.no_grad():
         model_feats = []
         fnames = sorted(glob.glob(os.path.join(FLAGS.data_path, '*.*')))
         # if len(fnames) == 0:
         #     raise FileNotFoundError(f'No files found in {FLAGS.data_path}')
-        for fname in tqdm.tqdm(natural_data):
+        for fname in tqdm.tqdm(data):
             try:
                 im = Image.fromarray(fname).convert('RGB')
             except:
