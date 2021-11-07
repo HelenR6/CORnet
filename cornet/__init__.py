@@ -11,11 +11,15 @@ from cornet.cornet_s import CORnet_S
 from cornet.cornet_s import HASH as HASH_S
 
 
-def get_model(model_letter, pretrained=False, map_location=None, **kwargs):
+def get_model(model_letter, pretrained=False, self_pretrained=False,map_location=None, **kwargs):
     model_letter = model_letter.upper()
     model_hash = globals()[f'HASH_{model_letter}']
     model = globals()[f'CORnet_{model_letter}'](**kwargs)
     model = torch.nn.DataParallel(model)
+    if self_pretrained:
+        url='https://vonenet-models.s3.us-east-2.amazonaws.com/vonecornets_e70.pth.tar'
+        ckpt_data = torch.utils.model_zoo.load_url(url, map_location=map_location)
+        model.load_state_dict(ckpt_data['state_dict'])
     if pretrained:
         url = f'https://s3.amazonaws.com/cornet-models/cornet_{model_letter.lower()}-{model_hash}.pth'
         ckpt_data = torch.utils.model_zoo.load_url(url, map_location=map_location)
