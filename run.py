@@ -46,6 +46,10 @@ parser.add_argument('--step_size', default=10, type=int,
 parser.add_argument('--momentum', default=.9, type=float, help='momentum')
 parser.add_argument('--weight_decay', default=1e-4, type=float,
                     help='weight decay ')
+parser.add_argument('--session', default=None,
+                    help='session name ')
+parser.add_argument('--sublayer', default=None,
+                    help='sublayer name ')
 
 
 FLAGS, FIRE_FLAGS = parser.parse_known_args()
@@ -177,7 +181,7 @@ def train(restore_path=None,  # useful when you want to restart training
             data_load_start = time.time()
 
 
-def test(layer='V4', sublayer='avgpool', time_step=0, imsize=224):
+def test(layer='V4', sublayer=FLAGS.sublayer, time_step=0, imsize=224):
     """
     Suitable for small image sets. If you have thousands of images or it is
     taking too long to extract features, consider using
@@ -232,7 +236,7 @@ def test(layer='V4', sublayer='avgpool', time_step=0, imsize=224):
         model_feats = np.concatenate(model_feats)
 
     if FLAGS.output_path is not None:
-        fname = f'CORnet-{FLAGS.model}_{layer}_{sublayer}_feats.npy'
+        fname = f'{FLAGS.session}/CORnet-{FLAGS.model}/{layer}_{sublayer}_feats.npy'
         np.save(os.path.join(FLAGS.output_path, fname), model_feats)
 
 
