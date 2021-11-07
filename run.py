@@ -9,7 +9,7 @@ import torch
 import torch.nn as nn
 import torch.utils.model_zoo
 import torchvision
-
+import h5py
 import cornet
 
 from PIL import Image
@@ -211,14 +211,17 @@ def test(layer='decoder', sublayer='avgpool', time_step=0, imsize=224):
     model_layer.register_forward_hook(_store_feats)
 
     model_feats = []
+ 
+    f = h5py.File(FLAGS.data_path,'r')
+    natural_data = f['images/naturalistic'][:]
     with torch.no_grad():
         model_feats = []
         fnames = sorted(glob.glob(os.path.join(FLAGS.data_path, '*.*')))
         if len(fnames) == 0:
             raise FileNotFoundError(f'No files found in {FLAGS.data_path}')
-        for fname in tqdm.tqdm(fnames):
+        for fname in tqdm.tqdm(natural_data):
             try:
-                im = Image.open(fname).convert('RGB')
+                im = Image.fromarray(fname).convert('RGB')
             except:
                 raise FileNotFoundError(f'Unable to load {fname}')
             im = transform(im)
