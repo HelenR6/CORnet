@@ -50,8 +50,7 @@ parser.add_argument('--session', default=None,
                     help='session name ')
 parser.add_argument('--sublayer', default=None,
                     help='sublayer name ')
-parser.add_argument('--self_pretrained', default=False,
-                    help='sublayer name ')
+
 
 
 FLAGS, FIRE_FLAGS = parser.parse_known_args()
@@ -84,9 +83,9 @@ def get_model(pretrained=False,self_pretrained=False):
     map_location = None if FLAGS.ngpus > 0 else 'cpu'
     model = getattr(cornet, f'cornet_{FLAGS.model.lower()}')
     if FLAGS.model.lower() == 'r':
-        model = model(pretrained=pretrained,self_pretrained=self_pretrained, map_location=map_location, times=FLAGS.times)
+        model = model(pretrained=pretrained,map_location=map_location, times=FLAGS.times)
     else:
-        model = model(pretrained=pretrained, self_pretrained=self_pretrained,map_location=map_location)
+        model = model(pretrained=pretrained, map_location=map_location)
 
     if FLAGS.ngpus == 0:
         model = model.module  # remove DataParallel
@@ -196,7 +195,7 @@ def test(layer='V4', sublayer=FLAGS.sublayer, time_step=0, imsize=224):
         - imsize (resize image to how many pixels, default: 224)
     """
 #     model = get_model(pretrained=True)
-    model = get_model(pretrained=False,self_pretrained=self_pretrained)
+    model = get_model(pretrained=True)
     transform = torchvision.transforms.Compose([
                     torchvision.transforms.Resize((imsize, imsize)),
                     torchvision.transforms.ToTensor(),
