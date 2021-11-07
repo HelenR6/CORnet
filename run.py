@@ -177,7 +177,7 @@ def train(restore_path=None,  # useful when you want to restart training
             data_load_start = time.time()
 
 
-def test(layer='decoder', sublayer='avgpool', time_step=0, imsize=224):
+def test(layer='V4', sublayer='avgpool', time_step=0, imsize=224):
     """
     Suitable for small image sets. If you have thousands of images or it is
     taking too long to extract features, consider using
