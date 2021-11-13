@@ -193,7 +193,7 @@ def eval_imagenet(imsize=224):
     model.eval()
     validator = ImageNetVal(model)
     validator()
-    
+
 def test(layer=FLAGS.layer, sublayer=FLAGS.sublayer, time_step=0, imsize=224):
     """
     Suitable for small image sets. If you have thousands of images or it is
@@ -349,10 +349,16 @@ class ImageNetVal(object):
             for (inp, target) in tqdm.tqdm(self.data_loader, desc=self.name):
                 if FLAGS.ngpus > 0:
                     target = target.cuda(non_blocking=True)
+                    inp = inp.cuda(non_blocking=True)
+                    model = model.cuda()
+                target = target.cuda(non_blocking=True)
+                inp = inp.cuda(non_blocking=True)
+                self.model = self.model.cuda()
                 output = self.model(inp)
 
                 record['loss'] += self.loss(output, target).item()
                 p1, p5 = accuracy(output, target, topk=(1, 5))
+                #print(p1/len(self.data_loader),p5/len(self.data_loader))
                 record['top1'] += p1
                 record['top5'] += p5
 
