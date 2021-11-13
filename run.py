@@ -183,7 +183,17 @@ def train(restore_path=None,  # useful when you want to restart training
 
             data_load_start = time.time()
 
-
+def eval_imagenet(imsize=224):
+    model = get_model(pretrained=True)
+    transform = torchvision.transforms.Compose([
+                    torchvision.transforms.Resize((imsize, imsize)),
+                    torchvision.transforms.ToTensor(),
+                    normalize,
+                ])
+    model.eval()
+    validator = ImageNetVal(model)
+    validator()
+    
 def test(layer=FLAGS.layer, sublayer=FLAGS.sublayer, time_step=0, imsize=224):
     """
     Suitable for small image sets. If you have thousands of images or it is
