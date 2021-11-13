@@ -364,6 +364,7 @@ class ImageNetVal(object):
 
         for key in record:
             record[key] /= len(self.data_loader.dataset.samples)
+            print(record[key])
         record['dur'] = (time.time() - start) / len(self.data_loader)
 
         return record
