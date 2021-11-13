@@ -11,6 +11,8 @@ import torch.utils.model_zoo
 import torchvision
 import h5py
 import cornet
+from advertorch.attacks import LinfPGDAttack, L2PGDAttack
+
 
 from PIL import Image
 Image.warnings.simplefilter('ignore')
@@ -296,6 +298,7 @@ class ImageNetTrain(object):
         self.lr.step(epoch=frac_epoch)
         if FLAGS.ngpus > 0:
             target = target.cuda(non_blocking=True)
+
         output = self.model(inp)
 
         record = {}
@@ -345,7 +348,13 @@ class ImageNetVal(object):
         self.model.eval()
         start = time.time()
         record = {'loss': 0, 'top1': 0, 'top5': 0}
+        self.model = self.model.cuda()
         with torch.no_grad():
+            adversary = L2PGDAttack(
+            self.model, loss_fn=nn.CrossEntropyLoss(reduction="sum"), eps=14.2737,
+            nb_iter=20, eps_iter=1.784, rand_init=True, clip_min=-2.1179, clip_max=2.6400,
+            targeted=False)
+        
             for (inp, target) in tqdm.tqdm(self.data_loader, desc=self.name):
                 if FLAGS.ngpus > 0:
                     target = target.cuda(non_blocking=True)
@@ -353,8 +362,9 @@ class ImageNetVal(object):
                     model = model.cuda()
                 target = target.cuda(non_blocking=True)
                 inp = inp.cuda(non_blocking=True)
-                self.model = self.model.cuda()
-                output = self.model(inp)
+                with torch.enable_grad():
+                  adv_untargeted = adversary.perturb(inp, target)
+                output = self.model(adv_untargeted)
 
                 record['loss'] += self.loss(output, target).item()
                 p1, p5 = accuracy(output, target, topk=(1, 5))
