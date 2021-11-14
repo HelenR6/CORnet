@@ -11,7 +11,7 @@ import torch.utils.model_zoo
 import torchvision
 import h5py
 import cornet
-from advertorch.attacks import LinfPGDAttack, L2PGDAttack
+
 
 
 from PIL import Image
