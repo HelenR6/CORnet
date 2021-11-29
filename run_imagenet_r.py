@@ -378,7 +378,7 @@ class ImageNetVal(object):
                 inp = inp.cuda(non_blocking=True)
 #                 with torch.enable_grad():
 #                   adv_untargeted = adversary.perturb(inp, target)
-                output = self.model(inp)[:,c]
+                output = self.model(inp)[:,imagenet_r_mask]
 
                 record['loss'] += self.loss(output, target).item()
                 p1, p5 = accuracy(output, target, topk=(1, 5))
@@ -390,6 +390,7 @@ class ImageNetVal(object):
             record[key] /= len(self.data_loader.dataset.samples)
             print(record[key])
         record['dur'] = (time.time() - start) / len(self.data_loader)
+        np.save(f'/content/gdrive/MyDrive/model_OOD_acc/imagenet-r/CORnet-{FLAGS.model.lower()}.npy',top1)
 
         return record
 
