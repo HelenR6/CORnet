@@ -11,7 +11,7 @@ import torch.utils.model_zoo
 import torchvision
 import h5py
 import cornet
-from advertorch.attacks import LinfPGDAttack, L2PGDAttack
+from advertorch.attacks import LinfPGDAttack, L2PGDAttack,L1PGDAttack
 
 
 from PIL import Image
@@ -352,7 +352,12 @@ class ImageNetVal(object):
         record = {'loss': 0, 'top1': 0, 'top5': 0}
         self.model = self.model.cuda()
         with torch.no_grad():
-            if int(FLAGS.attack)==2:
+            if FLAGS.attack=="inf":
+              adversary = LinfPGDAttack(
+              self.model, loss_fn=nn.CrossEntropyLoss(reduction="sum"), eps=4.7579/1020,
+              nb_iter=20, eps_iter=0.000233, rand_init=True, clip_min=-2.1179, clip_max=2.6400,
+              targeted=False)
+            if FLAGS.attack=='2':
 #               adversary = L2PGDAttack(
 #               self.model, loss_fn=nn.CrossEntropyLoss(reduction="sum"), eps=14.2737,
 #               nb_iter=20, eps_iter=1.784, rand_init=True, clip_min=-2.1179, clip_max=2.6400,
@@ -361,16 +366,12 @@ class ImageNetVal(object):
               self.model, loss_fn=nn.CrossEntropyLoss(reduction="sum"), eps=0.7137,
               nb_iter=20, eps_iter=0.09, rand_init=True, clip_min=-2.1179, clip_max=2.6400,
               targeted=False)
-            if int(FLAGS.attack)==1:
+            if FLAGS.attack=='1':
               adversary = L1PGDAttack(
-              model, loss_fn=nn.CrossEntropyLoss(reduction="sum"), eps=190.316,
+              self.model, loss_fn=nn.CrossEntropyLoss(reduction="sum"), eps=190.316,
               nb_iter=20, eps_iter=23.7895, rand_init=True, clip_min=-2.1179, clip_max=2.6400,
               targeted=False)
-            if FLAGS.attack=="inf":
-              adversary = LinfPGDAttack(
-              model, loss_fn=nn.CrossEntropyLoss(reduction="sum"), eps=4.7579/1020,
-              nb_iter=20, eps_iter=0.000233, rand_init=True, clip_min=-2.1179, clip_max=2.6400,
-              targeted=False)
+
       
         
             for (inp, target) in tqdm.tqdm(self.data_loader, desc=self.name):
@@ -398,11 +399,11 @@ class ImageNetVal(object):
         accuracy_array.append(record['top1'])
         accuracy_array.append(record['top5'])
         if int(FLAGS.attack)==2:
-          np.save(f'/content/gdrive/MyDrive/model_adv_loss/l2_0.15/{args.arch}_accuracy.npy', accuracy_array)
+          np.save(f'/content/gdrive/MyDrive/model_adv_loss/l2_0.15/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
         if int(FLAGS.attack)==1:
-          np.save(f'/content/gdrive/MyDrive/model_adv_loss/l1_40/{args.arch}_accuracy.npy', accuracy_array)
+          np.save(f'/content/gdrive/MyDrive/model_adv_loss/l1_40/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
         if (FLAGS.attack)=="inf":
-          np.save(f'/content/gdrive/MyDrive/model_adv_loss/linf1_1020/{args.arch}_accuracy.npy', accuracy_array)
+          np.save(f'/content/gdrive/MyDrive/model_adv_loss/linf1_1020/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
         return record
 
 
