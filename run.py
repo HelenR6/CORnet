@@ -404,6 +404,8 @@ class ImageNetVal(object):
           np.save(f'/content/gdrive/MyDrive/model_adv_loss/l1_40/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
         if (FLAGS.attack)=="inf":
           np.save(f'/content/gdrive/MyDrive/model_adv_loss/linf1_1020/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
+        if (FLAGS.attack)=="inf4":
+          np.save(f'/content/gdrive/MyDrive/model_adv_loss/linf4_255/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
         return record
 
 
