@@ -374,14 +374,7 @@ class ImageNetVal(object):
         accuracy_array=[]
         accuracy_array.append(record['top1'])
         accuracy_array.append(record['top5'])
-        if int(FLAGS.attack)==2:
-          np.save(f'/content/gdrive/MyDrive/model_adv_loss/l2_0.15/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
-        if int(FLAGS.attack)==1:
-          np.save(f'/content/gdrive/MyDrive/model_adv_loss/l1_40/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
-        if (FLAGS.attack)=="inf":
-          np.save(f'/content/gdrive/MyDrive/model_adv_loss/linf1_1020/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
-        if (FLAGS.attack)=="inf4":
-          np.save(f'/content/gdrive/MyDrive/model_adv_loss/linf4_255/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
+        np.save(f'/content/gdrive/MyDrive/model_OOD_acc/sketch/CORnet-{FLAGS.model}_accuracy.npy', accuracy_array)
         return record
 
 
