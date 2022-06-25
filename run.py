@@ -237,6 +237,23 @@ def test(layer=FLAGS.layer, sublayer=FLAGS.sublayer, time_step=0, imsize=224):
     f = h5py.File(FLAGS.data_path,'r')
     if FLAGS.session=='natural':
       data = f['images/naturalistic'][:]
+    elif FLAGS.session == 'imagenet':
+      num_classes = 1000
+      num_images=1000
+      num_images_per_class = (
+          num_images- 1) // num_classes
+      base_indices = np.arange(num_images_per_class).astype(int)
+      indices = []
+      for i in range(num_classes):
+          indices.extend(50 * i + base_indices)
+      for i in range((num_images - 1) % num_classes + 1):
+          indices.extend(50 * i + np.array([num_images_per_class]).astype(int))
+      data = []
+      imagenet_dir="/content/gdrive/MyDrive/bs_imagenet"
+      # with h5py.File(imagenet_filepath, 'r') as f:
+      for index in indices:
+          imagepath = os.path.join(imagenet_dir, f"{index}.png")
+          data.append(imagepath)
     else:
       session_path=FLAGS.session.replace('_','/')
       final_path=session_path[:-1]+'_'+session_path[-1:]
@@ -248,7 +265,11 @@ def test(layer=FLAGS.layer, sublayer=FLAGS.sublayer, time_step=0, imsize=224):
         #     raise FileNotFoundError(f'No files found in {FLAGS.data_path}')
         for fname in tqdm.tqdm(data):
             try:
-                im = Image.fromarray(fname).convert('RGB')
+                if FLAGS.session == 'imagenet':
+                  im = Image.open(fname)
+                else:
+                  im = Image.fromarray(fname).convert('RGB')
+
             except:
                 raise FileNotFoundError(f'Unable to load {fname}')
             im = transform(im)
